@@ -1,0 +1,30 @@
+/.build/
+/DerivedData/
+/build/
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mom
+!default.mom
+*.mb
+!default.mb
+*.xcodeproj
+!default.xcodeproj
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Swift Package Manager
+.Dsyms/
+
+# Archive
+*.xcarchive
+*.ipa
+
+# Environment
+.env

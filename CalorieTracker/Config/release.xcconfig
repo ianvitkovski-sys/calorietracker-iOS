@@ -1,0 +1,9 @@
+// Shared config
+#include?: CalorieTracker/Config/shared.xcconfig
+
+// Release-specific settings
+SWIFT_OPTIMIZATION_LEVEL = -O
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE
+ENABLE_NS_ASSERTIONS = NO
+COPY_PHASE_STRIP = YES
+ENABLE_TESTABILITY = NO

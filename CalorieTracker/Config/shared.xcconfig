@@ -1,0 +1,54 @@
+// Shared build settings for CalorieTracker
+// This file is included by both Debug and Release configs
+
+// Project settings
+PRODUCT_NAME = CalorieTracker
+PRODUCT_BUNDLE_IDENTIFIER = com.kilocodes.CalorieTracker
+PRODUCT_ORGANIZATION_NAME = KiloCodes
+PRODUCT_DOMAIN = com.kilocodes
+
+// Swift settings
+SWIFT_VERSION = 5.9
+SWIFT_EMIT_LOC_STRINGS = YES
+
+// iOS deployment
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+
+// Framework search paths
+FRAMEWORK_SEARCH_PATHS = $(inherited)
+
+// Library search paths
+LIBRARY_SEARCH_PATHS = $(inherited)
+
+// Header search paths
+HEADER_SEARCH_PATHS = $(inherited)
+
+// Enable strict Objective-C checking
+ENABLE_STRICT_OBJC_MSGSEND = YES
+ENABLE_UNDECLARED_DEPENDENCY_SAVING = YES
+ENABLE_MODULES = YES
+ENABLE_OBJC_ARC = YES
+
+// Code signing
+CODE_SIGN_IDENTITY = -
+CODE_SIGN_STYLE = Automatic
+
+// Info.plist
+INFOPLIST_KEY_CFBundleDisplayName = CalorieTracker
+INFOPLIST_KEY_CFBundleName = CalorieTracker
+INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 KiloCodes. All rights reserved."
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES
+INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES
+INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault
+INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen
+
+// Required permissions
+INFOPLIST_KEY_NSCameraUsageDescription = This app uses the camera to photograph your meals for food detection and nutritional analysis.
+INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = This app needs access to your photo library to import meal images.
+INFOPLIST_KEY_NSPhotoLibraryUsageDescription = This app needs access to your photo library to import meal images.
+
+// API Keys
+USDA_API_KEY = ""
+
+// Asset catalog
+ASSETCATALOG_LAUNCHIMAGE_NAME = LaunchImage

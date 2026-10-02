@@ -1,0 +1,42 @@
+name: CalorieTracker
+options:
+  bundleIdPrefix: com.kilocodes.CalorieTracker
+  deploymentTarget:
+    iOS: 17.0
+  selectedPipelineProvisioning: automatic
+  enableCoreData: false
+  enableUnitTestTarget: false
+configs:
+  Debug: debug
+  Release: release
+projects:
+  CalorieTracker:
+    configs:
+      Debug: debug
+      Release: release
+targets:
+  CalorieTracker:
+    type: application
+    platform: iOS
+    sources:
+      - CalorieTracker
+    resources:
+      - CalorieTracker/Info.plist
+      - CalorieTracker/Assets.xcassets
+      - CalorieTracker/LaunchScreen.storyboard
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.kilocodes.CalorieTracker
+      PRODUCT_NAME: CalorieTracker
+      INFOPLIST_FILE: CalorieTracker/Info.plist
+      GENERATE_INFOPLIST_FILE: NO
+      CODE_SIGN_STYLE: Automatic
+      SWIFT_VERSION: 5.9
+      IPHONEOS_DEPLOYMENT_TARGET: 17.0
+      USDA_API_KEY: ""
+      MARKETING_ICON_SET_NAME: AppIcon
+    configFiles:
+      Debug: CalorieTracker/Config/debug.xcconfig
+      Release: CalorieTracker/Config/release.xcconfig
+    dependencies:
+      - target: SwiftData
+      - target: Charts
