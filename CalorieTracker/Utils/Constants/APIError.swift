@@ -55,3 +55,35 @@ enum NetworkError: LocalizedError {
         }
     }
 }
+
+enum USDError: LocalizedError {
+    case networkError(NSError)
+    case foodNotFound
+    case invalidAPIKey
+    case decodingFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .networkError(let error): return "Food database request failed: \(error.localizedDescription)"
+        case .foodNotFound: return "No matching food found in the USDA database"
+        case .invalidAPIKey: return "USDA API key is missing or invalid"
+        case .decodingFailed: return "Could not read the food database response"
+        }
+    }
+}
+
+enum DetectionError: LocalizedError {
+    case invalidImage
+    case modelNotLoaded
+    case processingFailed(Error)
+    case noFoodFound
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidImage: return "The selected image could not be read"
+        case .modelNotLoaded: return "The food detection model is not available"
+        case .processingFailed(let error): return "Food detection failed: \(error.localizedDescription)"
+        case .noFoodFound: return "No food was detected in this photo"
+        }
+    }
+}

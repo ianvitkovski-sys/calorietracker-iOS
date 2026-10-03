@@ -49,7 +49,7 @@ final class InsightsViewModel: ObservableObject {
 
             let summariesByDate = Dictionary(grouping: meals) { calendar.startOfDay(for: $0.timestamp) }
 
-            let summaries: [DailySummary] = (0..<selectedPeriod.days).compactMap { offset in
+            let summaries: [DailySummary] = Array((0..<selectedPeriod.days).compactMap { offset in
                 let date = calendar.date(byAdding: .day, value: -offset, to: endDate)!
                 let startOfDate = calendar.startOfDay(for: date)
                 let dayMeals = summariesByDate[startOfDate] ?? []
@@ -68,7 +68,7 @@ final class InsightsViewModel: ObservableObject {
                     totalSugarG: totals.sugar,
                     totalSodiumG: totals.sodium
                 )
-            }.reversed()
+            }.reversed())
 
             weeklyData = summaries
             monthlyData = summaries

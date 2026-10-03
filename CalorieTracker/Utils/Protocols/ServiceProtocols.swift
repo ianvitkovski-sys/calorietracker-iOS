@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import UIKit
 
 protocol FoodDetectionServiceProtocol {
     func detectFood(in image: UIImage, completion: @escaping (Result<[DetectedFood], DetectionError>) -> Void)

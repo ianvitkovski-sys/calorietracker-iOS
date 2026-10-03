@@ -53,7 +53,7 @@ struct MealResultsView: View {
             .cornerRadius(AppTheme.cornerRadius)
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadius)
-                    .stroke(AppTheme.dividerColor, lineWidth: 1)
+                    .stroke(Color.dividerColor, lineWidth: 1)
             )
     }
 

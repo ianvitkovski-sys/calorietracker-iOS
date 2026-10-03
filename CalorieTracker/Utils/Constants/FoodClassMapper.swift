@@ -45,7 +45,6 @@ struct FoodClassMapper {
         "french_fries": "06030",
         "french_toast": "02008",
         "fried_egg": "07018",
-        "donut": "02015",
         "grilled_cheese_sandwich": "07047",
         "grilled_scallops": "03010",
         "grilled_squid": "03011",

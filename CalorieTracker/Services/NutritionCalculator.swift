@@ -45,7 +45,7 @@ final class NutritionCalculator {
     }
 
     func calculateBMI(for user: User) -> Double? {
-        guard let heightCm = user.currentWeightKg, let weightKg = user.currentWeightKg, heightCm > 0 else { return nil }
+        guard let heightCm = user.heightCm, let weightKg = user.currentWeightKg, heightCm > 0 else { return nil }
         return weightKg / pow(heightCm / 100.0, 2)
     }
 

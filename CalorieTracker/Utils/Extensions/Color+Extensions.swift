@@ -31,7 +31,9 @@ extension Color {
 }
 
 extension Color {
-    static let appGreen = Color("AppGreen")
+    /// Brand green. Defined as a literal rather than a named asset so it is
+    /// always available without depending on the asset catalog contents.
+    static let appGreen = Color(hex: "2E7D32")
     static let appBackground = Color(UIColor.systemGroupedBackground)
     static let cardBackground = Color(UIColor.secondarySystemGroupedBackground)
     static let dividerColor = Color(UIColor.separator)

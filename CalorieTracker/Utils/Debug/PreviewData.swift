@@ -13,10 +13,10 @@ final class PreviewData {
             DailySummary.self
         ])
 
-        let config = ModelConfiguration(schema: schema, localizedError: nil)
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
         do {
-            let container = try ModelContainer(for: config)
+            let container = try ModelContainer(for: schema, configurations: config)
             populatePreviewData(into: container)
             return container
         } catch {
@@ -29,7 +29,7 @@ final class PreviewData {
 
         let user = User(
             name: "Alex Johnson",
-            dateOfBirth: Calendar.current.date(byAdding: .year, value: -1, value: Date()),
+            dateOfBirth: Calendar.current.date(byAdding: .year, value: -1, to: Date()),
             gender: .male,
             heightCm: 180,
             startingWeightKg: 85,

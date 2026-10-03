@@ -50,12 +50,13 @@ final class ImagePreprocessingService {
     }
 
     func resize(_ image: UIImage, to size: CGSize) -> UIImage? {
-        UIGraphicsBeginImageRenderer(size: size)
-        let image = UIGraphicsImageRenderer(format: image.imageRendererFormat).image { _ in
+        let format = image.imageRendererFormat
+        format.scale = 1
+
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
         }
-        UIGraphicsEndImageRenderer()
-        return image
     }
 
     func extractDepth(from image: UIImage) -> Data? {

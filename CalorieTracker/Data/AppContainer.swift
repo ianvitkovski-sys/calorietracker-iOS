@@ -30,13 +30,10 @@ final class AppContainer: ObservableObject {
             DailySummary.self
         ])
 
-        let modelConfiguration = ModelConfiguration(
-            schema: schema,
-            localizedError: nil
-        )
+        let modelConfiguration = ModelConfiguration(schema: schema)
 
         do {
-            modelContainer = try ModelContainer(for: modelConfiguration)
+            modelContainer = try ModelContainer(for: schema, configurations: modelConfiguration)
             mainModelContext = modelContainer.mainContext
         } catch {
             print("CoreData: Failed to create model container: \(error)")
@@ -50,8 +47,8 @@ final class AppContainer: ObservableObject {
         cameraService = CameraService()
         imagePreprocessingService = ImagePreprocessingService()
         nutritionCalculator = NutritionCalculator()
-        apiService = APIService()
-        hapticsService = HapticsService()
+        apiService = APIService.shared
+        hapticsService = HapticsService.shared
         imageStorageService = ImageStorageService()
 
         Task {
@@ -61,10 +58,21 @@ final class AppContainer: ObservableObject {
     }
 
     private static func createFallbackContainer() -> ModelContainer {
+        let schema = Schema([
+            User.self,
+            MealLog.self,
+            FoodItemInMeal.self,
+            FoodDatabaseEntry.self,
+            DailySummary.self
+        ])
+
         do {
-            return try ModelContainer.forSnapshots([])
+            return try ModelContainer(
+                for: schema,
+                configurations: ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            )
         } catch {
-            return try! ModelContainer(for: [])
+            fatalError("Unable to create in-memory model container: \(error)")
         }
     }
 

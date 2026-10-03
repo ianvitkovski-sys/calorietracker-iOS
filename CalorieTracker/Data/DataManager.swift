@@ -18,12 +18,12 @@ final class DataManager {
         if let range = dateRange {
             descriptor = FetchDescriptor<MealLog>(
                 predicate: #Predicate { $0.userId == userId && $0.timestamp >= range.lowerBound && $0.timestamp <= range.upperBound },
-                sortBy: \MealLog.timestamp
+                sortBy: [SortDescriptor(\MealLog.timestamp)]
             )
         } else {
             descriptor = FetchDescriptor<MealLog>(
                 predicate: #Predicate { $0.userId == userId },
-                sortBy: \MealLog.timestamp
+                sortBy: [SortDescriptor(\MealLog.timestamp)]
             )
         }
         return try context.fetch(descriptor)
@@ -42,7 +42,7 @@ final class DataManager {
         let startOfDay = calendar.startOfDay(for: date)
         let descriptor = FetchDescriptor<DailySummary>(
             predicate: #Predicate { $0.userId == userId && $0.date == startOfDay },
-            sortBy: \DailySummary.date
+            sortBy: [SortDescriptor(\DailySummary.date)]
         )
         let results = try context.fetch(descriptor)
         return results.first
@@ -77,7 +77,7 @@ final class DataManager {
     func searchFoodEntries(query: String) async throws -> [FoodDatabaseEntry] {
         let descriptor = FetchDescriptor<FoodDatabaseEntry>(
             predicate: #Predicate { $0.name.localizedStandardContains(query) },
-            sortBy: \FoodDatabaseEntry.name
+            sortBy: [SortDescriptor(\FoodDatabaseEntry.name)]
         )
         return try context.fetch(descriptor).prefix(50).map { $0 }
     }

@@ -65,13 +65,11 @@ final class USDAService {
         return try decoder.decode(USDAFoodResponse.self, from: data)
     }
 
-    func getFoodListnutrients(fdcId: Int) async throws -> USDAFoodResponse {
-        var components = URLComponents(string: "\(baseURL)food/\(fdcId)")!
-        components.queryItems = [
-            URLQueryItem(name: "api_key", value: apiKey),
-            URLQueryItem(name: "nutrients", value: "1008,1003,1005,1004,10795,10121,10925,1087,1089,1106,1051,1107,1108,1114")
-        ]
-
-        return try await getFoodDetails(fdcId: fdcId, nutrients: "1008,1003,1005,1004,10795,10121,1087,1089,1106,1051,1107,1108,1114")
+func getFoodListnutrients(fdcId: Int) async throws -> USDAFoodResponse {
+        try await getFoodDetails(fdcId: fdcId, nutrients: Self.listNutrientIds)
     }
+
+    /// The nutrient IDs requested for routine meal logging: energy, macronutrients,
+    /// fiber, sugars, sodium, and the micronutrients surfaced in the UI.
+    private static let listNutrientIds = "1008,1003,1005,1004,10795,10121,1087,1089,1106,1051,1107,1108,1114"
 }

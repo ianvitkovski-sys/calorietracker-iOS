@@ -61,7 +61,11 @@ struct CalendarView: View {
                             .frame(height: 36)
                     } else {
                         let day = index - (weekdayOfFirst - 1) + 1
-                        let date = calendar.date(by: .compose(day: day, month: calendar.component(.month, from: currentMonth), year: calendar.component(.year, from: currentMonth)))!
+                        let date = calendar.date(from: DateComponents(
+                            year: calendar.component(.year, from: currentMonth),
+                            month: calendar.component(.month, from: currentMonth),
+                            day: day
+                        )) ?? currentMonth
                         dayView(date: date)
                     }
                 }

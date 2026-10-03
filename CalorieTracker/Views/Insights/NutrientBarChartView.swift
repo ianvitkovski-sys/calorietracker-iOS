@@ -25,7 +25,7 @@ struct NutrientBarChartView: View {
                 }
             }
         }
-        .chartYScale(domain: 0...nutrients.map(\.target).max() ?? 100 * 1.3)
+        .chartYScale(domain: 0...((nutrients.map(\.target).max() ?? 100) * 1.3))
         .chartXAxis {
             AxisMarks(values: .automatic(desiredCount: nutrients.count)) { value in
                 AxisValueLabel()

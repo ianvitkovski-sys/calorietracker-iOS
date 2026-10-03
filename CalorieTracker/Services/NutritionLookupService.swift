@@ -26,9 +26,9 @@ final class NutritionLookupService {
     }
 
     private func fetchLocalEntry(fdcId: String, name: String) throws -> FoodDatabaseEntry? {
-        if let id = fdcId, !id.isEmpty {
+        if !fdcId.isEmpty {
             let descriptor = FetchDescriptor<FoodDatabaseEntry>(
-                predicate: #Predicate { $0.fdcId == id }
+                predicate: #Predicate { $0.fdcId == fdcId }
             )
             if let results = try modelContext.fetch(descriptor).first {
                 return results

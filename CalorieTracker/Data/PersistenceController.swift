@@ -15,10 +15,7 @@ struct PersistenceController {
             DailySummary.self
         ])
 
-        let configuration = ModelConfiguration(
-            schema: schema,
-            localizedError: nil
-        )
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
 
         do {
             if inMemory {
@@ -33,7 +30,7 @@ struct PersistenceController {
                     configurations: [configuration]
                 )
             } else {
-                container = try ModelContainer(for: configuration)
+                container = try ModelContainer(for: schema, configurations: configuration)
             }
         } catch {
             fatalError("Failed to create CoreData stack: \(error)")
