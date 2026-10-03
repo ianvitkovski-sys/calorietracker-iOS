@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import AVFoundation
 import Photos
+import Combine
 
 @MainActor
 final class CameraService: NSObject, ObservableObject {

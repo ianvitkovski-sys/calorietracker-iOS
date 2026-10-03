@@ -2,136 +2,92 @@ name: Build iOS App
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-simulator:
-    name: Build for iOS Simulator
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
+  build:
+    name: Build unsigned IPA
+    runs-on: macos-15
 
-      - name: Install xcodegen
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Generate placeholder app icons
+      - name: Verify project generation
         run: |
-          ICONSET="CalorieTracker/Assets.xcassets/AppIcon.appiconset"
-          mkdir -p "$ICONSET"
-          
-          # Generate a simple green square icon for all sizes
-          ICON_SIZES=(
-            "20x20@2x:40" "20x20@3x:60"
-            "29x29@2x:58" "29x29@3x:87"
-            "40x40@2x:80" "40x40@3x:120"
-            "60x2x:120" "60x3x:180"
-            "20x20@ipad:20" "20x20@ipad@2x:40"
-            "29x29@ipad:29" "29x29@ipad@2x:58"
-            "40x40@ipad:40" "40x40@ipad@2x:80"
-            "76x76@ipad:76" "76x76@ipad@2x:152"
-            "83.5x83.5@2x:167"
-          )
-          
-          for entry in "${ICON_SIZES[@]}"; do
-            IFS=':' read -r name size <<< "$entry"
-            if [[ -z "$size" ]]; then
-              size=$(echo "$name" | cut -dx -f1)
-              filename="AppIcon-${name}.png"
-            else
-              filename="AppIcon-${name// /}.png"
-            fi
-            
-            # Use sips to create a green square with the app name
-            sips -g pixelSize "$ICONSET/AppIcon-Market.png" 2>/dev/null || {
-              # Create a simple colored PNG
-              python3 -c "
-from PIL import Image
-import sys
-import os
-size = int('$size'.split('x')[0]) if 'x' in '$size' else int('$size')
-img = Image.new('RGB', (size, size), color='#4CAF50')
-img.save('$ICONSET/AppIcon-${name// /}.png')
-" 2>/dev/null || {
-                # Fallback: use a single 1024x1024 icon and sips to scale
-                if [ ! -f "$ICONSET/AppIcon-Market.png" ]; then
-                  python3 -c "
-from PIL import Image
-img = Image.new('RGB', (1024, 1024), color='#4CAF50')
-img.save('$ICONSET/AppIcon-Market.png')
-"
-                fi
-                sips -z "$size" "$size" "$ICONSET/AppIcon-Market.png" --out "$ICONSET/AppIcon-${name// /}.png" 2>/dev/null || true
-              }
-            }
-          done
+          xcodegen --version
+          xcodegen generate
+          ls -la CalorieTracker.xcodeproj
 
-      - name: Generate Xcode project
-        run: xcodegen
-
-      - name: Build for simulator
+      - name: Build app for iOS device (unsigned)
         run: |
+          set -o pipefail
           xcodebuild build \
             -project CalorieTracker.xcodeproj \
             -scheme CalorieTracker \
-            -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
-            -derivedDataPath build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED="NO" \
-            CODE_SIGNING_ALLOWED="NO" \
-            GCC_PREPROCESSOR_DEFINITIONS='$CONFIGURATION=DEBUG' \
-            2>&1
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: CalorieTracker-simulator-app
-          path: |
-            build/Build/Products/Debug-iphonesimulator/CalorieTracker.app
-          retention-days: 7
-
-  build-device:
-    name: Build for iOS Device
-    runs-on: macos-latest
-    needs: build-simulator
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install xcodegen
-        run: brew install xcodegen
-
-      - name: Generate Xcode project
-        run: xcodegen
-
-      - name: Build for device
-        run: |
-          xcodebuild build \
-            -project CalorieTracker.xcodeproj \
-            -scheme CalorieTracker \
-            -configuration Debug \
+            -configuration Release \
             -sdk iphoneos \
-            -derivedDataPath build-device \
+            -derivedDataPath build \
+            -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED="NO" \
             CODE_SIGNING_ALLOWED="NO" \
-            ONLY_ACTIVE_ARCH="YES" \
-            2>&1 || true
+            ENABLE_BITCODE="NO" \
+            ONLY_ACTIVE_ARCH="NO" \
+            2>&1 | tee build.log
 
-      - name: Package .app
+      - name: Show build errors if any
+        if: failure()
+        run: grep -E "error:|warning: .*never used|BUILD FAILED" build.log | head -100 || true
+
+      - name: Package unsigned IPA
         run: |
-          APP_PATH="build-device/Build/Products/Debug-iphoneos/CalorieTracker.app"
-          if [ -d "$APP_PATH" ]; then
-            mkdir -p artifacts
-            cp -r "$APP_PATH" artifacts/
+          APP_PATH="build/Build/Products/Release-iphoneos/CalorieTracker.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error::App bundle not found at $APP_PATH"
+            exit 1
           fi
 
-      - name: Upload device build
+          rm -rf payload
+          mkdir -p payload/Payload
+          cp -r "$APP_PATH" payload/Payload/
+
+          mkdir -p artifacts
+          cd payload
+          zip -qry ../artifacts/CalorieTracker-unsigned.ipa Payload
+          cd ..
+
+          echo "--- IPA contents ---"
+          unzip -l artifacts/CalorieTracker-unsigned.ipa | head -40
+          echo "--- Binary architecture ---"
+          lipo -info payload/Payload/CalorieTracker.app/CalorieTracker
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: CalorieTracker-unsigned-ipa
+          path: artifacts/CalorieTracker-unsigned.ipa
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: CalorieTracker-device-app
-          path: artifacts/
+          name: CalorieTracker-build-log
+          path: build.log
           retention-days: 7
+          if-no-files-found: ignore

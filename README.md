@@ -1,128 +1,77 @@
-﻿# CalorieTracker вЂ” iOS Calorie Tracking App
+﻿# CalorieTracker
 
-AI-powered food detection and nutritional tracking for iOS.
+AI-assisted calorie tracking for iOS. Photograph a meal, detect the food items, estimate portion
+weights, and log the nutritional breakdown.
 
-## Quick Start
+> **New here? Read [GET_ON_IPHONE.md](GET_ON_IPHONE.md)** — it has the step-by-step path for
+> building this on Windows without a Mac and installing it on your iPhone.
 
+## Requirements
 
-### Option C: Cloud Build (No Mac Required)
+- iOS 17.0 or later (SwiftData)
+- Swift 5.9
+- Built with Xcode 16.x
 
-You can build the app on GitHub's macOS runners:
+## Building
 
-1. Fork this repository on GitHub
-2. Go to Actions tab → select "Build iOS App" workflow
-3. Click "Run workflow" → choose branch
-4. Wait ~15-20 minutes for the build to complete
-5. Download the artifacts (CalorieTracker-simulator-app and CalorieTracker-device-app)
-6. Install using [AltStore](https://altstore.io/) or [Sideloadly](https://sideloadly.io/)
-
-Note: Device installation requires an Apple Developer account for code signing.
-
-### Prerequisites
-- macOS 14.0+ with Xcode 15.4+
-- iOS 17.0+ deployment target
-
-### Build Instructions
-
-**Option A: Using xcodegen (Recommended)**
+The Xcode project is generated from `project.yml` by
+[XcodeGen](https://github.com/yonaskolb/XcodeGen), so it is not checked into git.
 
 ```bash
-# Install xcodegen
 brew install xcodegen
-
-# Generate Xcode project
-xcodegen
-
-# Open and build
+xcodegen generate
 open CalorieTracker.xcodeproj
 ```
 
-**Option B: Manual Xcode Setup**
-
-1. Create a new iOS App project in Xcode
-2. Add all `.swift` files from `CalorieTracker/` folder to your project
-3. Set the bundle identifier to `com.kilocodes.CalorieTracker`
-4. Add `Info.plist` and `Assets.xcassets` from this project
-5. Build and run
-
-### CoreML Model Integration
-
-The app uses a CoreML model named `FoodDetector` for food detection:
-
-1. Download the Food-101 model or train a custom one
-2. Convert to CoreML format: `coremlcompiler compile FoodDetector.mlmodel`
-3. Add `FoodDetector.mlmodel` to your Xcode project in the `CalorieTracker/Models/` folder
-4. Xcode will auto-generate the `FoodDetector` Swift class
-
-In debug mode, the app uses mock detection with sample data.
-
-### USDA API Key (Optional)
-
-For foods not in the local database, the app falls back to the USDA FoodData Central API:
-
-1. Get a free API key at https://fdc.nal.usda.gov/api-key-signup.html
-2. Add the key to your Xcode scheme's environment variables:
-   - Name: `USDA_API_KEY`
-   - Value: `your_api_key_here`
-
-## Project Structure
-
-```
-CalorieTracker/
-в”њв”Ђв”Ђ CalorieTrackerApp.swift          # App entry point
-в”њв”Ђв”Ђ Info.plist                       # App configuration
-в”њв”Ђв”Ђ Assets.xcassets/                 # App icons and images
-в”њв”Ђв”Ђ LaunchScreen.storyboard          # Launch screen
-в”њв”Ђв”Ђ Models/                          # SwiftData entities
-в”‚   в”њв”Ђв”Ђ User.swift
-в”‚   в”њв”Ђв”Ђ MealLog.swift
-в”‚   в”њв”Ђв”Ђ FoodItemInMeal.swift
-в”‚   в”њв”Ђв”Ђ FoodDatabaseEntry.swift
-в”‚   в”њв”Ђв”Ђ FoodNutritionInfo.swift
-в”‚   в”њв”Ђв”Ђ DetectedFood.swift
-в”‚   в”њв”Ђв”Ђ WeightEstimate.swift
-в”‚   в””в”Ђв”Ђ FoodDetector.swift            # CoreML model stub
-в”њв”Ђв”Ђ ViewModels/                      # MVVM view models
-в”њв”Ђв”Ђ Services/                        # Business logic & data services
-в”њв”Ђв”Ђ Data/                            # Persistence & navigation
-в”њв”Ђв”Ђ Views/
-в”‚   в”њв”Ђв”Ђ RootView.swift               # Tab-based root
-в”‚   в”њв”Ђв”Ђ Dashboard/                    # Daily summary views
-в”‚   в”њв”Ђв”Ђ Diary/                       # Meal history views
-в”‚   в”њв”Ђв”Ђ Camera/                      # Photo capture & analysis
-в”‚   в”њв”Ђв”Ђ Insights/                    # Analytics & trends
-в”‚   в”њв”Ђв”Ђ Profile/                     # User profile & settings
-в”‚   в””в”Ђв”Ђ LaunchScreenView.swift
-в””в”Ђв”Ђ Utils/
-    в”њв”Ђв”Ђ Extensions/                  # Swift extensions
-    в”њв”Ђв”Ђ Enums/                       # App enums
-    в”њв”Ђв”Ђ Constants/                   # Constants & mappings
-    в”њв”Ђв”Ђ Protocols/                   # Service protocols
-    в”њв”Ђв”Ђ Config/                      # Build configurations
-    в””в”Ђв”Ђ Debug/                       # Preview and mock data
-```
+`xcodegen generate` must be re-run whenever files are added or removed.
 
 ## Architecture
 
-- **Pattern**: MVVM + Clean Architecture
-- **State Management**: SwiftData (iOS 17+) with ObservableObject ViewModels
-- **Image Processing**: Vision Framework + CoreML (on-device, privacy-preserving)
-- **Nutritional Data**: Pre-bundled USDA FoodData Central + API fallback
-- **Weight Estimation**: Multi-modal (depth, reference objects, heuristics, user input)
+| Layer | Contents |
+|---|---|
+| `Models/` | SwiftData entities and value types |
+| `ViewModels/` | `@MainActor` `ObservableObject` view models |
+| `Services/` | Camera, CoreML detection, weight estimation, nutrition lookup |
+| `Data/` | `AppContainer` dependency graph, SwiftData stack |
+| `Utils/` | Extensions, enums, constants, protocols, previews |
 
-## Key Features
+- **Pattern** — MVVM with a lightweight dependency container (`AppContainer.shared`)
+- **State** — SwiftData (`@Model`) with `ObservableObject` view models
+- **Detection** — Vision framework + CoreML, on-device
+- **Nutrition** — bundled seed data with an optional USDA FoodData Central fallback
+- **Weight estimation** — confidence-weighted fusion of plate scale, reference objects, and heuristics
 
-- **AI Food Detection**: Upload photos to detect food items and estimate weights
-- **Nutrition Breakdown**: Calories, macros, and micronutrients
-- **Weight Estimation**: Multi-modal estimation with confidence-weighted fusion
-- **Daily Dashboard**: Progress tracking with charts and rings
-- **Meal Diary**: Historical view with calendar navigation
-- **Insights**: Weekly/monthly analytics
-- **Offline Mode**: Core detection and nutrition lookup work offline
+## Current build status
 
-## Notes
+`FoodDetector.mlmodel` is **not** bundled yet, so `FoodDetectionService` reports mock detections in
+both `DEBUG` and `Release`. Every screen, flow, and nutrition calculation is functional; only the
+image recognition is stubbed. To add real detection, drop a compiled `FoodDetector.mlmodel` into
+`CalorieTracker/Models/` and implement `loadCoreMLModel()` and `extractDetectedFoods(from:imageSize:)`
+in `Services/FoodDetectionService.swift`, where the Vision request is already sketched.
 
-- The app uses mock food detection in DEBUG mode for development without a CoreML model
-- All image processing happens on-device вЂ” photos never leave the device
-- Requires iOS 17.0+ due to SwiftData usage
+## USDA API key (optional)
 
+Only needed for foods missing from the bundled seed data. Get a free key at
+<https://fdc.nal.usda.gov/api-key-signup.html>, then set `USDA_API_KEY` in `project.yml` or as a CI
+secret before building. Never commit the key.
+
+## Project layout
+
+```
+CalorieTracker/
+|-- .github/workflows/build.yml    # CI: unsigned IPA for Sideloadly
+|-- project.yml                    # XcodeGen definition
+|-- GET_ON_IPHONE.md               # iPhone install instructions
+|-- CalorieTracker/
+|   |-- CalorieTrackerApp.swift    # @main entry point
+|   |-- RootView.swift             # splash, tab bar, per-tab NavigationStack
+|   |-- Info.plist
+|   |-- LaunchScreen.storyboard
+|   |-- Assets.xcassets/
+|   |-- Config/                    # xcconfig files
+|   |-- Models/                    # SwiftData entities
+|   |-- ViewModels/
+|   |-- Services/
+|   |-- Data/
+|   `-- Utils/
+```

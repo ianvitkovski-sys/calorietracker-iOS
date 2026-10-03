@@ -1,5 +1,5 @@
 // Shared config
-#include?: CalorieTracker/Config/shared.xcconfig
+#include? "shared.xcconfig"
 
 // Release-specific settings
 SWIFT_OPTIMIZATION_LEVEL = -O

@@ -30,7 +30,8 @@ ENABLE_MODULES = YES
 ENABLE_OBJC_ARC = YES
 
 // Code signing
-CODE_SIGN_IDENTITY = -
+// Signing identity is intentionally NOT hardcoded here so that local builds,
+// GitHub Actions secrets, and CI-managed profiles can all supply their own.
 CODE_SIGN_STYLE = Automatic
 
 // Info.plist
@@ -49,6 +50,3 @@ INFOPLIST_KEY_NSPhotoLibraryUsageDescription = This app needs access to your pho
 
 // API Keys
 USDA_API_KEY = ""
-
-// Asset catalog
-ASSETCATALOG_LAUNCHIMAGE_NAME = LaunchImage

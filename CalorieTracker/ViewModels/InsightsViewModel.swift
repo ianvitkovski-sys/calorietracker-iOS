@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 import Charts
+import Combine
 
 @MainActor
 final class InsightsViewModel: ObservableObject {

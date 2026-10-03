@@ -1,5 +1,4 @@
 import Foundation
-import Foundation
 
 extension Date {
     func formatted(style: DateStyle = .medium) -> String {

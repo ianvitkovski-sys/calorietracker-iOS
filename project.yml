@@ -1,42 +1,76 @@
 name: CalorieTracker
+
 options:
-  bundleIdPrefix: com.kilocodes.CalorieTracker
+  bundleIdPrefix: com.kilocodes
   deploymentTarget:
-    iOS: 17.0
-  selectedPipelineProvisioning: automatic
-  enableCoreData: false
-  enableUnitTestTarget: false
+    iOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: false
+
 configs:
   Debug: debug
   Release: release
-projects:
-  CalorieTracker:
-    configs:
-      Debug: debug
-      Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    ALWAYS_SEARCH_USER_PATHS: NO
+    CLANG_ENABLE_MODULES: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
 targets:
   CalorieTracker:
     type: application
     platform: iOS
+    deploymentTarget: "17.0"
+
     sources:
-      - CalorieTracker
+      - path: CalorieTracker
+        excludes:
+          - "Info.plist"
+          - "LaunchScreen.storyboard"
+          - "Assets.xcassets"
+          - "Config"
+        type: group
+
     resources:
-      - CalorieTracker/Info.plist
-      - CalorieTracker/Assets.xcassets
-      - CalorieTracker/LaunchScreen.storyboard
-    settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.kilocodes.CalorieTracker
-      PRODUCT_NAME: CalorieTracker
-      INFOPLIST_FILE: CalorieTracker/Info.plist
-      GENERATE_INFOPLIST_FILE: NO
-      CODE_SIGN_STYLE: Automatic
-      SWIFT_VERSION: 5.9
-      IPHONEOS_DEPLOYMENT_TARGET: 17.0
-      USDA_API_KEY: ""
-      MARKETING_ICON_SET_NAME: AppIcon
+      - path: CalorieTracker/Assets.xcassets
+      - path: CalorieTracker/LaunchScreen.storyboard
+
     configFiles:
       Debug: CalorieTracker/Config/debug.xcconfig
       Release: CalorieTracker/Config/release.xcconfig
-    dependencies:
-      - target: SwiftData
-      - target: Charts
+
+    settings:
+      base:
+        PRODUCT_NAME: CalorieTracker
+        PRODUCT_BUNDLE_IDENTIFIER: com.kilocodes.CalorieTracker
+        PRODUCT_ORGANIZATION_NAME: KiloCodes
+        INFOPLIST_FILE: CalorieTracker/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        USDA_API_KEY: ""
+        ENABLE_BITCODE: NO
+        SWIFT_EMIT_LOC_STRINGS: YES
+
+schemes:
+  CalorieTracker:
+    build:
+      targets:
+        CalorieTracker: all
+      parallelizeBuild: true
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
